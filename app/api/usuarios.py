@@ -1,19 +1,22 @@
 from fastapi import APIRouter, HTTPException
+from app.schemas.usuarios import UsuarioCriar, UsuarioOut
 from app.services.usuarios import criar_usuario, listar_usuarios
-from app.schemas.usuarios import UsuarioCriar
 
 router = APIRouter()
 
-@router.post("/usuarios", status_code=201)
+@router.post("/usuarios", status_code=201, response_model=UsuarioOut)
 def criar(usuario: UsuarioCriar):
+    # Cria um novo usuário com o nome fornecido.
     try:
         return criar_usuario(usuario.nome)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erro interno ao criar usuário")
 
-@router.get("/usuarios")
+
+@router.get("/usuarios", response_model=list[UsuarioOut])
 def listar():
+    # Lista todos os usuários existentes.
     try:
         return listar_usuarios()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erro interno ao listar usuários")
